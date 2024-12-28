@@ -238,9 +238,12 @@
 
         // Manual site check functionality
         async function checkSiteNow(siteId, button) {
+            // Disable the button and show loading state
             button.disabled = true;
-            button.querySelector('.spinner').classList.remove('d-none');
-            button.querySelector('.button-text').classList.add('d-none');
+            const spinner = button.querySelector('.spinner');
+            const buttonText = button.querySelector('.button-text');
+            spinner.classList.remove('d-none');
+            buttonText.classList.add('d-none');
             
             try {
                 const response = await fetch(`/check/${siteId}`, {
@@ -248,19 +251,41 @@
                 });
                 
                 if (!response.ok) {
-                    const data = await response.json();
-                    throw new Error(data.error || 'Check failed');
+                    throw new Error('Check failed');
                 }
                 
-                window.location.reload();
+                const data = await response.json();
+                
+                // Update only this site's row
+                const row = button.closest('tr');
+                const statusCell = row.querySelector('td:nth-child(2)');
+                const responseTimeCell = row.querySelector('td:nth-child(3)');
+                const lastCheckedCell = row.querySelector('td:nth-child(5)');
+                
+                // Update status
+                const statusBadge = statusCell.querySelector('.status-badge');
+                statusBadge.className = `status-badge ${data.is_up ? 'status-up' : 'status-down'}`;
+                statusBadge.textContent = data.is_up ? 'Up' : 'Down';
+                
+                // Update response time
+                responseTimeCell.textContent = data.response_time ? 
+                    `${data.response_time.toFixed(2)}s` : '-';
+                
+                // Update last checked time
+                lastCheckedCell.textContent = data.timestamp;
+                
             } catch (error) {
+                console.error('Error checking site:', error);
                 alert('Error checking site: ' + error.message);
+            } finally {
+                // Re-enable the button and hide loading state
                 button.disabled = false;
-                button.querySelector('.spinner').classList.add('d-none');
-                button.querySelector('.button-text').classList.remove('d-none');
+                spinner.classList.add('d-none');
+                buttonText.classList.remove('d-none');
             }
         }
 
+        
         // History chart functionality
         let historyChart = null;
 

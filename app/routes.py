@@ -55,15 +55,17 @@ def add_site():
 
 @main.route('/check/<int:site_id>', methods=['POST'])
 def check_site_now(site_id):
-    """Manually trigger a check for a site"""
+    """Manually trigger a check for a specific site"""
     site = Site.query.get_or_404(site_id)
     try:
+        # Only check the requested site
         check = check_site(site)
         return jsonify({
             'status': 'success',
             'is_up': check.is_up,
             'response_time': check.response_time,
-            'status_code': check.status_code
+            'status_code': check.status_code,
+            'timestamp': check.timestamp.strftime('%Y-%m-%d %H:%M:%S')
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 400
