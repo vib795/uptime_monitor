@@ -1,0 +1,25 @@
+# Core Framework
+Flask
+Werkzeug
+
+# Database
+Flask-SQLAlchemy
+SQLAlchemy
+alembic
+Flask-Migrate
+
+# Background Tasks and Scheduling
+APScheduler
+requests
+
+# Email Support
+Flask-Mail
+blinker
+
+# Security and Environment
+python-dotenv
+pyOpenSSL
+cryptography
+
+# Time Handling
+pytz
